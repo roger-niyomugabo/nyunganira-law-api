@@ -10,8 +10,12 @@ export default {
         'CLOUDINARY_API_SECRET',
         'API_SENDER_EMAIL',
         'EMAIL_PASSWORD',
+        'ADMIN_PASSWORD',
+        'ADMIN_EMAIL',
     ],
     JWT_SECRET: process.env.JWT_SECRET,
+    ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
+    ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     NODEMAILER: {
         API_SENDER_EMAIL: process.env.API_SENDER_EMAIL,
         EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
