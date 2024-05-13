@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "nyunganira_user",
+    "password": "nyunganira_pass",
+    "database": "nyunganira_database",
+    "host": "nyunganira_db",
+    "dialect": "postgres"
+  }
+}
