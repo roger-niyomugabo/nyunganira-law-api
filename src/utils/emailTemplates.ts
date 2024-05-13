@@ -1,7 +1,7 @@
 /* eslint-disable sonarjs/no-identical-functions */
 import { EmailInfo } from '../interfaces';
 
-const emailVerificationTemplate = (info: EmailInfo) => `
+const accountCreationTemplate = (info: EmailInfo) => `
 <!DOCTYPE html>
 <html>
 <head>
@@ -35,16 +35,17 @@ const emailVerificationTemplate = (info: EmailInfo) => `
 </head>
 <body>
     <div class="content">
-        <p>Hello ${info.firstname},</p>
-        <p>Thanks for registering for an account on Skill Synchronization! Before we get started, we just need to confirm that this is you.</p>
-        <p>Click below to verify your email address:</p>
-        <p><a href="${info.URL}" class="button">Verify Email</a></p>
-        <p>If you have any questions or need assistance, please contact us.</p>
+        <p>Hello ${info.fullName},</p>
+        <p>You have been registered for an account on <strong>Nyunganira Law Application</strong> as a lawyer.</p>
+        <p>Below are your login credentials.</p>
+        <p>Email: ${info.email}</p>
+        <p>Password: ${info.password}</p>
+        <p>If you have any questions or need assistance, please contact the authorities.</p>
     </div>
 </body>
 </html>
 `;
 
 export {
-    emailVerificationTemplate,
+    accountCreationTemplate
 };

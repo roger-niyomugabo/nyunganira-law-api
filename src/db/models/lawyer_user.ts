@@ -77,19 +77,14 @@ InferCreationAttributes<Lawyer>
         return Lawyer;
     }
 
-    static selectionAllowedFields: string[] = ['id', 'province', 'district', 'sector', 'cell', 'street', 'createdAt', 'updatedAt'];
+    static selectionAllowedFields: string[] = ['id', 'profilePicture', 'createdAt', 'updatedAt'];
     static defaultSortFields: OrderClause[] = [
-        ['createdAt', 'desc'], ['district', 'asc'],
+        ['createdAt', 'desc'],
     ];
-    static sortAllowedFields: string[] = ['province', 'district', 'sector', 'cell', 'createdAt', 'updatedAt'];
+    static sortAllowedFields: string[] = ['specializations', 'createdAt', 'updatedAt'];
     static queryAllowedFields: { [field: string]: { type: QueryParameterType } } =
         {
             id: { type: 'string' },
-            province: { type: 'string' },
-            district: { type: 'string' },
-            sector: { type: 'string' },
-            cell: { type: 'string' },
-            street: { type: 'string' },
             createdAt: { type: 'string' },
             updatedAt: { type: 'string' },
         };
