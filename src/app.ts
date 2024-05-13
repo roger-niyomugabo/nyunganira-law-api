@@ -11,6 +11,7 @@ import { errorLogger, requestLogger } from './middleware/logging_middleware';
 import health from './routes/health';
 import resource from './routes/resource';
 import test from './routes/testing_resources';
+import client_resource from './routes/v1/client_resource';
 
 const createServer = (app) => {
     app.disable('x-powered-by');
@@ -35,7 +36,8 @@ const createServer = (app) => {
     // Set routes
     app.use('/index', resource, router.all('/', methodNotAllowedErrorHandler));
 
-    // Set other routes here
+    // client routes
+    app.use('/api/v1/client', client_resource, router.all('/', methodNotAllowedErrorHandler));
 
     // Middleware error handlers
     app.use(notFoundErrorHandler);

@@ -1,16 +1,10 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import {
-    Association,
     CreationOptional,
     DataTypes,
-    ForeignKey,
-    HasManyCreateAssociationMixin,
-    HasManyGetAssociationsMixin,
-    HasManySetAssociationsMixin,
     InferAttributes,
     InferCreationAttributes,
     Model,
-    NonAttribute,
     Sequelize
 } from 'sequelize';
 import {
@@ -24,37 +18,20 @@ import {
     buildWhereSequelizeFilters
 } from '../../utils';
 import { genderT, roleT } from '../../interfaces/userInterface';
-import { AdminUser } from './admin_user';
 
 export class User extends Model<
 InferAttributes<User>,
 InferCreationAttributes<User>
 > {
     declare id: CreationOptional<string>;
-    declare firstname: string;
-    declare surname: string;
+    declare fullName: string;
     declare email: string;
-    declare NID: string;
     declare gender: genderT;
     declare phoneNumber: string;
     declare password: string;
     declare role: roleT;
-    declare isVerified: boolean;
-    declare userDataId: ForeignKey<
-    AdminUser['id']
-    >;
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
-
-    // User hasOne AdminUser
-    declare adminUser?: NonAttribute<AdminUser>;
-    declare getAdminUser: HasManyGetAssociationsMixin<AdminUser>;
-    declare setAdminUser: HasManySetAssociationsMixin<AdminUser, number>;
-    declare createAdminUser: HasManyCreateAssociationMixin<AdminUser>;
-
-    declare static associations: {
-        AdminUser: Association<User, AdminUser>;
-    };
 
     static initModel(sequelize: Sequelize): typeof User {
         User.init(
@@ -67,20 +44,11 @@ InferCreationAttributes<User>
                     allowNull: false,
                     defaultValue: Sequelize.literal('gen_random_uuid()'),
                 },
-                firstname: {
-                    type: DataTypes.STRING,
-                    allowNull: false,
-                },
-                surname: {
+                fullName: {
                     type: DataTypes.STRING,
                     allowNull: false,
                 },
                 email: {
-                    type: DataTypes.STRING,
-                    allowNull: false,
-                    unique: true,
-                },
-                NID: {
                     type: DataTypes.STRING,
                     allowNull: false,
                     unique: true,
@@ -102,11 +70,6 @@ InferCreationAttributes<User>
                     type: DataTypes.STRING,
                     allowNull: false,
                 },
-                isVerified: {
-                    type: DataTypes.BOOLEAN,
-                    allowNull: false,
-                    defaultValue: false,
-                },
                 createdAt: {
                     type: DataTypes.DATE,
                 },
@@ -125,26 +88,22 @@ InferCreationAttributes<User>
 
     static selectionAllowedFields: string[] = [
         'id',
-        'firstname',
-        'surname',
+        'fullName',
         'email',
-        'NID',
         'gender',
         'phoneNumber',
         'role',
-        'isVerified',
         'createdAt',
         'updatedAt',
     ];
     static defaultSortFields: OrderClause[] = [
         ['role', 'asc'],
-        ['firstname', 'asc'],
         ['createdAt', 'desc'],
+        ['fullName', 'asc'],
     ];
     static sortAllowedFields: string[] = [
         'role',
-        'firstname',
-        'surname',
+        'fullName',
         'gender',
         'createdAt',
         'updatedAt',
@@ -152,14 +111,11 @@ InferCreationAttributes<User>
     static queryAllowedFields: { [field: string]: { type: QueryParameterType } } =
         {
             id: { type: 'string' },
-            firstname: { type: 'string' },
-            surname: { type: 'string' },
+            fullName: { type: 'string' },
             email: { type: 'string' },
-            NID: { type: 'string' },
             gender: { type: 'string' },
             phoneNumber: { type: 'string' },
             role: { type: 'string' },
-            isVerified: { type: 'boolean' },
             createdAt: { type: 'string' },
             updatedAt: { type: 'string' },
         };
