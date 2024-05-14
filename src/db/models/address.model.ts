@@ -23,36 +23,35 @@ import {
     buildSelectionSequelizeFilters,
     buildWhereSequelizeFilters
 } from '../../utils';
-import { genderT, roleT } from '../../interfaces/userInterface';
+import { genderT } from '../../interfaces/userInterface';
 import { Lawyer } from './lawyer_user';
 
-export class User extends Model<
-InferAttributes<User>,
-InferCreationAttributes<User>
+export class Address extends Model<
+InferAttributes<Address>,
+InferCreationAttributes<Address>
 > {
     declare id: CreationOptional<string>;
-    declare fullName: string;
-    declare email: string;
-    declare gender: genderT;
-    declare phoneNumber: string;
-    declare password: string;
-    declare role: roleT;
-    declare userDataId: ForeignKey<Lawyer['id']>;
+    declare lawyerId: ForeignKey<Lawyer['id']>;
+    declare province: string;
+    declare district: string;
+    declare sector: genderT;
+    declare cell: string;
+    declare street?: string;
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
 
-    // User hasOne Lawyer
+    // Address belongs to Lawyer
     declare lawyer?: NonAttribute<Lawyer>;
     declare getLawyer: HasManyGetAssociationsMixin<Lawyer>;
     declare setLawyer: HasManySetAssociationsMixin<Lawyer, number>;
     declare createLawyer: HasManyCreateAssociationMixin<Lawyer>;
 
     declare static associations: {
-        Lawyer: Association<User, Lawyer>;
+        Lawyer: Association<Address, Lawyer>;
     };
 
-    static initModel(sequelize: Sequelize): typeof User {
-        User.init(
+    static initModel(sequelize: Sequelize): typeof Address {
+        Address.init(
             {
                 id: {
                     type: DataTypes.UUID,
@@ -62,31 +61,25 @@ InferCreationAttributes<User>
                     allowNull: false,
                     defaultValue: Sequelize.literal('gen_random_uuid()'),
                 },
-                fullName: {
+                province: {
                     type: DataTypes.STRING,
                     allowNull: false,
                 },
-                email: {
-                    type: DataTypes.STRING,
-                    allowNull: false,
-                    unique: true,
-                },
-                gender: {
+                district: {
                     type: DataTypes.STRING,
                     allowNull: false,
                 },
-                phoneNumber: {
-                    type: DataTypes.STRING,
-                    allowNull: false,
-                    unique: true,
-                },
-                password: {
+                sector: {
                     type: DataTypes.STRING,
                     allowNull: false,
                 },
-                role: {
+                cell: {
                     type: DataTypes.STRING,
                     allowNull: false,
+                },
+                street: {
+                    type: DataTypes.STRING,
+                    allowNull: true,
                 },
                 createdAt: {
                     type: DataTypes.DATE,
@@ -96,27 +89,27 @@ InferCreationAttributes<User>
                 },
             },
             {
-                modelName: 'user',
+                modelName: 'address',
                 sequelize,
             }
         );
 
-        return User;
+        return Address;
     }
 
-    static selectionAllowedFields: string[] = ['id', 'fullName', 'email', 'gender', 'phoneNumber', 'role', 'createdAt', 'updatedAt'];
+    static selectionAllowedFields: string[] = ['id', 'province', 'district', 'sector', 'cell', 'street', 'createdAt', 'updatedAt'];
     static defaultSortFields: OrderClause[] = [
-        ['role', 'asc'], ['createdAt', 'desc'], ['fullName', 'asc'],
+        ['createdAt', 'desc'], ['district', 'asc'],
     ];
-    static sortAllowedFields: string[] = ['role', 'fullName', 'gender', 'createdAt', 'updatedAt'];
+    static sortAllowedFields: string[] = ['province', 'district', 'sector', 'cell', 'createdAt', 'updatedAt'];
     static queryAllowedFields: { [field: string]: { type: QueryParameterType } } =
         {
             id: { type: 'string' },
-            fullName: { type: 'string' },
-            email: { type: 'string' },
-            gender: { type: 'string' },
-            phoneNumber: { type: 'string' },
-            role: { type: 'string' },
+            province: { type: 'string' },
+            district: { type: 'string' },
+            sector: { type: 'string' },
+            cell: { type: 'string' },
+            street: { type: 'string' },
             createdAt: { type: 'string' },
             updatedAt: { type: 'string' },
         };

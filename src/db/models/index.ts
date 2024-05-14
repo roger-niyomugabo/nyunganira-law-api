@@ -1,23 +1,40 @@
 import type { Sequelize } from 'sequelize';
 import { User } from './user.model';
-import { AdminUser } from './admin_user';
+import { Lawyer } from './lawyer_user';
+import { Address } from './address.model';
 
 export {
     User,
-    AdminUser
+    Lawyer,
+    Address
 };
 
 export function initModels(sequelize: Sequelize) {
     User.initModel(sequelize);
+    Lawyer.initModel(sequelize);
+    Address.initModel(sequelize);
 
     // Declare associations here
-    User.hasOne(AdminUser, {
+    User.hasOne(Lawyer, {
         foreignKey: {
             allowNull: false,
         },
         onDelete: 'CASCADE',
     });
-    AdminUser.belongsTo(User, {
+    Lawyer.belongsTo(User, {
+        foreignKey: {
+            allowNull: false,
+        },
+        onDelete: 'CASCADE',
+    });
+
+    Lawyer.hasOne(Address, {
+        foreignKey: {
+            allowNull: false,
+        },
+        onDelete: 'CASCADE',
+    });
+    Address.belongsTo(Lawyer, {
         foreignKey: {
             allowNull: false,
         },
@@ -26,6 +43,7 @@ export function initModels(sequelize: Sequelize) {
 
     return {
         User,
-        AdminUser,
+        Lawyer,
+        Address,
     };
 }

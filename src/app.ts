@@ -1,27 +1,25 @@
 import express from 'express';
 const router = express.Router();
-// import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import config from './config';
 import { errorHandler, jsonParseErrorHandler, methodNotAllowedErrorHandler, notFoundErrorHandler, payloadTooLargeErrorHandler, uuidErrorHandler } from './middleware/error_middleware';
-// import { correlationId } from './middleware/middleware';
 import { errorLogger, requestLogger } from './middleware/logging_middleware';
 
 // Import controllers
 import health from './routes/health';
 import resource from './routes/resource';
 import test from './routes/testing_resources';
+import client_resource from './routes/v1/client_resource';
+import users_resource from './routes/v1/users_resource';
+import lawyer_resource from './routes/v1/lawyer_resource';
 
 const createServer = (app) => {
     app.disable('x-powered-by');
-    // Enable all cors requests
     app.use(cors());
-    // app.use(correlationId);
     app.use(requestLogger);
     app.use(express.json({ limit: config.storage.requestBodyPayloadSizeLimit }));
     app.use(jsonParseErrorHandler);
     app.use(express.urlencoded({ limit: config.storage.requestBodyPayloadSizeLimit, extended: false }));
-    // app.use(cookieParser());
     app.use(payloadTooLargeErrorHandler);
 
     // Health checks
@@ -35,7 +33,12 @@ const createServer = (app) => {
     // Set routes
     app.use('/index', resource, router.all('/', methodNotAllowedErrorHandler));
 
-    // Set other routes here
+    // client routes
+    app.use('/api/v1/client', client_resource, router.all('/', methodNotAllowedErrorHandler));
+    // users routes
+    app.use('/api/v1/users', users_resource, router.all('/', methodNotAllowedErrorHandler));
+    // lawyer routes
+    app.use('/api/v1/lawyer', lawyer_resource, router.all('/', methodNotAllowedErrorHandler));
 
     // Middleware error handlers
     app.use(notFoundErrorHandler);

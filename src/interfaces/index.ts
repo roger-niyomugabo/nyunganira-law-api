@@ -6,8 +6,7 @@ export interface TokenPayloadI {
 }
 
 export interface EmailInfo {
-    email: string[];
-    firstname?: string;
-    verificationCode?: string;
-    URL?: string;
+    email: string;
+    fullName?: string;
+    password?: string;
 }
