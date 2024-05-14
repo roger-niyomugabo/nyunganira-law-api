@@ -12,6 +12,7 @@ import test from './routes/testing_resources';
 import client_resource from './routes/v1/client_resource';
 import users_resource from './routes/v1/users_resource';
 import lawyer_resource from './routes/v1/lawyer_resource';
+import admin_resource from './routes/v1/admin_resource';
 
 const createServer = (app) => {
     app.disable('x-powered-by');
@@ -39,6 +40,8 @@ const createServer = (app) => {
     app.use('/api/v1/users', users_resource, router.all('/', methodNotAllowedErrorHandler));
     // lawyer routes
     app.use('/api/v1/lawyer', lawyer_resource, router.all('/', methodNotAllowedErrorHandler));
+    // admin routes
+    app.use('/api/v1/admin', admin_resource, router.all('/', methodNotAllowedErrorHandler));
 
     // Middleware error handlers
     app.use(notFoundErrorHandler);
