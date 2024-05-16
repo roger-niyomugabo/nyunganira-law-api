@@ -9,4 +9,9 @@ export interface EmailInfo {
     email: string;
     fullName?: string;
     password?: string;
+    lawyerName?: string;
+    URL?: string;
 }
+
+export const caseRequestStatus = ['requested', 'approved', 'down payment', 'requested full payment', 'fully paid'] as const;
+export type caseRequestStatusT = typeof caseRequestStatus[number];

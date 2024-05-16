@@ -1,9 +1,9 @@
 import nodemailer from 'nodemailer';
 import config from '../config';
 import { EmailInfo } from '../interfaces';
-import { accountCreationTemplate } from './emailTemplates';
+import { accountCreationTemplate, caseRequestTemplate } from './emailTemplates';
 
-const mailer = async (info: EmailInfo, action: string) => {
+const mailer = async (info: EmailInfo, action: string, attachmentPath?: string) => {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -22,6 +22,11 @@ const mailer = async (info: EmailInfo, action: string) => {
             data = accountCreationTemplate(info);
             emailto = info.email;
             break;
+        case 'caseRequestInvitation':
+            subject = 'Case Request Invitation';
+            data = caseRequestTemplate(info);
+            emailto = info.email;
+            break;
 
         default:
             subject = '';
@@ -32,6 +37,7 @@ const mailer = async (info: EmailInfo, action: string) => {
         to: emailto,
         subject,
         html: data,
+        attachments: attachmentPath ? [{ path: attachmentPath }] : [],
     };
     try {
         return transporter.sendMail(mailOptions);

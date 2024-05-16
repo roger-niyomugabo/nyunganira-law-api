@@ -46,6 +46,51 @@ const accountCreationTemplate = (info: EmailInfo) => `
 </html>
 `;
 
+const caseRequestTemplate = (info: EmailInfo) => `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .content {
+            padding: 20px 0;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="content">
+        <p>Hello ${info.lawyerName},</p>
+        <p>You have received a new case request. Please review the case file attached.</p>
+        <p>If you accept the case, click the button below to confirm:</p>
+        <a href="${info.URL}" class="button">Accept Case</a>
+        <p>Upon accepting the case, you will be requested to make the down payment.</p>
+    </div>
+</body>
+</html>
+`;
+
 export {
-    accountCreationTemplate
+    accountCreationTemplate,
+    caseRequestTemplate
 };
