@@ -13,6 +13,7 @@ import client_resource from './routes/v1/client_resource';
 import users_resource from './routes/v1/users_resource';
 import lawyer_resource from './routes/v1/lawyer_resource';
 import admin_resource from './routes/v1/admin_resource';
+import case_request_detail from './routes/v1/case_request_detail';
 import case_request_resource from './routes/v1/case_request_resource';
 
 const createServer = (app) => {
@@ -44,7 +45,8 @@ const createServer = (app) => {
     // admin routes
     app.use('/api/v1/admin', admin_resource, router.all('/', methodNotAllowedErrorHandler));
     // case request routes
-    app.use('/api/v1/request/:lawyerId', case_request_resource, router.all('/', methodNotAllowedErrorHandler));
+    app.use('/api/v1/case_request/accept', case_request_detail, router.all('/', methodNotAllowedErrorHandler));
+    app.use('/api/v1/request', case_request_resource, router.all('/', methodNotAllowedErrorHandler));
 
     // Middleware error handlers
     app.use(notFoundErrorHandler);
