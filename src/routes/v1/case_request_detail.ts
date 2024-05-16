@@ -9,7 +9,7 @@ import { isLawyer } from '../../middleware/access_middleware';
 import { CaseRequest, User } from '../../db/models';
 const router = express.Router({ mergeParams: true });
 
-// Helper profile update validations
+// accept case request validations
 const acceptCaseRequestValidations = Joi.object({
     downPayment: Joi.number().required(),
     fullPayment: Joi.number().required(),

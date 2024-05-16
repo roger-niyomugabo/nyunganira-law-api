@@ -50,14 +50,16 @@ router.post('/register', isAdmin, validate(lawyerValidations), asyncMiddleware(a
             const newAddress = await Address.create({ ...req.body, lawyerId: lawyer.id }, { transaction: t });
             user.password = undefined;
             const responseData = {
-                lawyer: {
+                user: {
                     ...user.dataValues,
+                },
+                lawyer: {
                     ...lawyer.dataValues,
                 },
                 address: newAddress.dataValues,
             };
 
-            await mailer({ email: responseData.lawyer.email, fullName: responseData.lawyer.fullName, password }, 'accountCreationRequest');
+            await mailer({ email: responseData.user.email, fullName: responseData.user.fullName, password }, 'accountCreationRequest');
             return output(res, 201, 'Lawyer created successfully', responseData, null);
         });
     } catch (error) {
