@@ -32,6 +32,8 @@ InferCreationAttributes<Lawyer>
     declare id: CreationOptional<string>;
     declare userId: ForeignKey<User['id']>;
     declare profilePicture: string;
+    declare available: boolean;
+    declare years_of_experience: number;
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
 
@@ -59,7 +61,14 @@ InferCreationAttributes<Lawyer>
                 profilePicture: {
                     type: DataTypes.STRING,
                     allowNull: false,
-                    defaultValue: 'avatar',
+                },
+                available: {
+                    type: DataTypes.BOOLEAN,
+                    defaultValue: true,
+                },
+                years_of_experience: {
+                    type: DataTypes.NUMBER,
+                    allowNull: false,
                 },
                 createdAt: {
                     type: DataTypes.DATE,
@@ -77,7 +86,7 @@ InferCreationAttributes<Lawyer>
         return Lawyer;
     }
 
-    static selectionAllowedFields: string[] = ['id', 'profilePicture', 'createdAt', 'updatedAt'];
+    static selectionAllowedFields: string[] = ['id', 'profilePicture', 'availabe', 'years_of_experience', 'createdAt', 'updatedAt'];
     static defaultSortFields: OrderClause[] = [
         ['createdAt', 'desc'],
     ];
@@ -85,6 +94,8 @@ InferCreationAttributes<Lawyer>
     static queryAllowedFields: { [field: string]: { type: QueryParameterType } } =
         {
             id: { type: 'string' },
+            availabe: { type: 'boolean' },
+            years_of_experience: { type: 'number' },
             createdAt: { type: 'string' },
             updatedAt: { type: 'string' },
         };
