@@ -15,6 +15,8 @@ import lawyer_resource from './routes/v1/lawyer_resource';
 import admin_resource from './routes/v1/admin_resource';
 import case_request_detail from './routes/v1/case_request_detail';
 import case_request_resource from './routes/v1/case_request_resource';
+import payment_resource from './routes/v1/payment_resource';
+import payment_success_resource from './routes/v1/payment_success_resource';
 
 const createServer = (app) => {
     app.disable('x-powered-by');
@@ -45,8 +47,11 @@ const createServer = (app) => {
     // admin routes
     app.use('/api/v1/admin', admin_resource, router.all('/', methodNotAllowedErrorHandler));
     // case request routes
-    app.use('/api/v1/case_request/accept', case_request_detail, router.all('/', methodNotAllowedErrorHandler));
-    app.use('/api/v1/request', case_request_resource, router.all('/', methodNotAllowedErrorHandler));
+    app.use('/api/v1/case_request', case_request_resource, router.all('/', methodNotAllowedErrorHandler));
+    app.use('/api/v1/case_request/:caseRequestId', case_request_detail, router.all('/', methodNotAllowedErrorHandler));
+    // payment routes
+    app.use('/api/v1/payment/process', payment_success_resource, router.all('/', methodNotAllowedErrorHandler));
+    app.use('/api/v1/payment/:caseRequestId', payment_resource, router.all('/', methodNotAllowedErrorHandler));
 
     // Middleware error handlers
     app.use(notFoundErrorHandler);

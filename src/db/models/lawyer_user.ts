@@ -67,7 +67,7 @@ InferCreationAttributes<Lawyer>
                     defaultValue: true,
                 },
                 years_of_experience: {
-                    type: DataTypes.NUMBER,
+                    type: DataTypes.INTEGER,
                     allowNull: false,
                 },
                 createdAt: {

@@ -15,21 +15,22 @@ import {
 import { OrderClause, QueryParameterType, WhereAutoClause } from 'interfaces/sequelize_query_builder';
 import { buildOrderSequelizeFilters, buildSelectionSequelizeFilters, buildWhereSequelizeFilters } from '../../utils';
 import { User } from './user.model';
-import { caseRequestStatusT } from '../../interfaces';
-import { Lawyer } from './lawyer_user';
+import { paymentStatusT } from '../../interfaces';
+import { CaseRequest } from './case_request.model';
 
-export class CaseRequest extends Model<
-InferAttributes<CaseRequest>,
-InferCreationAttributes<CaseRequest>
+export class Payment extends Model<
+InferAttributes<Payment>,
+InferCreationAttributes<Payment>
 > {
     declare id: CreationOptional<string>;
-    declare clientId: ForeignKey<User['id']>;
-    declare lawyerId: ForeignKey<Lawyer['id']>;
-    declare description: string;
-    declare caseFile: string;
-    declare downPayment: number;
-    declare fullPayment: number;
-    declare status: caseRequestStatusT;
+    declare userId: ForeignKey<User['id']>;
+    declare caseRequestId: ForeignKey<CaseRequest['id']>;
+    declare refId: string;
+    declare status: paymentStatusT;
+    declare amount: number;
+    declare provider: string;
+    declare type: string;
+    declare fee?: number;
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
 
@@ -39,19 +40,13 @@ InferCreationAttributes<CaseRequest>
     declare setUser: HasManySetAssociationsMixin<User, number>;
     declare createUser: HasManyCreateAssociationMixin<User>;
 
-    // Lawyer belongs to User
-    declare lawyer?: NonAttribute<Lawyer>;
-    declare getLawyer: HasManyGetAssociationsMixin<Lawyer>;
-    declare setLawyer: HasManySetAssociationsMixin<Lawyer, number>;
-    declare createLawyer: HasManyCreateAssociationMixin<Lawyer>;
-
     declare static associations: {
-        User: Association<CaseRequest, User>;
-        Lawyer: Association<CaseRequest, Lawyer>;
+        User: Association<Payment, User>;
+        CaseRequest: Association<Payment, CaseRequest>;
     };
 
-    static initModel(sequelize: Sequelize): typeof CaseRequest {
-        CaseRequest.init({
+    static initModel(sequelize: Sequelize): typeof Payment {
+        Payment.init({
             id: {
                 type: DataTypes.UUID,
                 primaryKey: true,
@@ -60,26 +55,29 @@ InferCreationAttributes<CaseRequest>
                 allowNull: false,
                 defaultValue: Sequelize.literal('gen_random_uuid()'),
             },
-            description: {
-                type: DataTypes.TEXT,
-                allowNull: false,
-            },
-            caseFile: {
+            refId: {
                 type: DataTypes.STRING,
                 allowNull: false,
-            },
-            downPayment: {
-                type: DataTypes.DECIMAL(10, 2),
-                defaultValue: 0,
-            },
-            fullPayment: {
-                type: DataTypes.DECIMAL(10, 2),
-                defaultValue: 0,
             },
             status: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                defaultValue: 'requested',
+            },
+            amount: {
+                type: DataTypes.DECIMAL(10, 2),
+                defaultValue: 0,
+            },
+            provider: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            type: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            fee: {
+                type: DataTypes.DECIMAL(10, 2),
+                defaultValue: 0,
             },
             createdAt: {
                 type: DataTypes.DATE,
@@ -88,25 +86,26 @@ InferCreationAttributes<CaseRequest>
                 type: DataTypes.DATE,
             },
         }, {
-            modelName: 'case_request',
+            modelName: 'payment',
             sequelize,
         });
 
-        return CaseRequest;
+        return Payment;
     }
 
     static selectionAllowedFields: string[] =
-        ['id', 'description', 'caseFile', 'downPayment', 'fullPayment', 'status', 'createdAt', 'updatedAt'];
+        ['id', 'refId', 'status', 'amount', 'provider', 'type', 'createdAt', 'updatedAt'];
     static defaultSortFields: OrderClause[] = [
         ['createdAt', 'desc'],
     ];
-    static sortAllowedFields: string[] = ['status', 'downPayment', 'fullPayment', 'createdAt', 'updatedAt'];
+    static sortAllowedFields: string[] = ['status', 'amount', 'provider', 'type', 'createdAt', 'updatedAt'];
     static queryAllowedFields: { [field: string]: { type: QueryParameterType } } = {
         id: { type: 'string' },
-        description: { type: 'string' },
-        downPayment: { type: 'number' },
-        fullPayment: { type: 'number' },
+        refId: { type: 'string' },
         status: { type: 'string' },
+        amount: { type: 'number' },
+        provider: { type: 'string' },
+        type: { type: 'string' },
         createdAt: { type: 'string' },
         updatedAt: { type: 'string' },
     };
