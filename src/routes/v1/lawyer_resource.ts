@@ -13,6 +13,7 @@ import { phoneNumberRegex } from '../../utils/globalValidations';
 import { gender } from '../../interfaces/userInterface';
 import { generatePassword } from '../../utils/generatePassword';
 import mailer from '../../utils/mailer';
+import cloudinaryUpload from '../../utils/file_upload';
 
 const router = express.Router();
 
@@ -26,6 +27,7 @@ const lawyerValidations = Joi.object({
         'string.pattern.base': 'Please provide phone number, starting with country code.',
         'string.empty': 'Phone number is required',
     }),
+    years_of_experience: Joi.number().required(),
 
     province: Joi.string().required(),
     district: Joi.string().required(),
@@ -34,8 +36,9 @@ const lawyerValidations = Joi.object({
     street: Joi.string(),
 });
 
-router.post('/register', isAdmin, validate(lawyerValidations), asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
+router.post('/register', isAdmin, cloudinaryUpload.single('profilePicture'), validate(lawyerValidations), asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
     const { email, phoneNumber } = req.body;
+    const file = req.file as Express.Multer.File;
 
     const userExists = await User.findOne({ where: { [Op.or] :[{ email }, { phoneNumber }] } });
     if (userExists) {
@@ -46,7 +49,7 @@ router.post('/register', isAdmin, validate(lawyerValidations), asyncMiddleware(a
     try {
         await db.transaction(async (t) => {
             const user = await User.create({ ...req.body, password: hashedPassword, role: 'lawyer' }, { transaction: t });
-            const lawyer = await Lawyer.create({ ...req.body, userId: user.id }, { transaction: t });
+            const lawyer = await Lawyer.create({ ...req.body, profilePicture: file.path, userId: user.id }, { transaction: t });
             const newAddress = await Address.create({ ...req.body, lawyerId: lawyer.id }, { transaction: t });
             user.password = undefined;
             const responseData = {
