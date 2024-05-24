@@ -16,6 +16,7 @@ import { OrderClause, QueryParameterType, WhereAutoClause } from 'interfaces/seq
 import { buildOrderSequelizeFilters, buildSelectionSequelizeFilters, buildWhereSequelizeFilters } from '../../utils';
 import { User } from './user.model';
 import { caseRequestStatusT } from '../../interfaces';
+import { Lawyer } from './lawyer_user';
 
 export class CaseRequest extends Model<
 InferAttributes<CaseRequest>,
@@ -23,7 +24,7 @@ InferCreationAttributes<CaseRequest>
 > {
     declare id: CreationOptional<string>;
     declare clientId: ForeignKey<User['id']>;
-    declare lawyerId: ForeignKey<User['id']>;
+    declare lawyerId: ForeignKey<Lawyer['id']>;
     declare description: string;
     declare caseFile: string;
     declare downPayment: number;
@@ -38,8 +39,15 @@ InferCreationAttributes<CaseRequest>
     declare setUser: HasManySetAssociationsMixin<User, number>;
     declare createUser: HasManyCreateAssociationMixin<User>;
 
+    // Lawyer belongs to User
+    declare lawyer?: NonAttribute<Lawyer>;
+    declare getLawyer: HasManyGetAssociationsMixin<Lawyer>;
+    declare setLawyer: HasManySetAssociationsMixin<Lawyer, number>;
+    declare createLawyer: HasManyCreateAssociationMixin<Lawyer>;
+
     declare static associations: {
         User: Association<CaseRequest, User>;
+        Lawyer: Association<CaseRequest, Lawyer>;
     };
 
     static initModel(sequelize: Sequelize): typeof CaseRequest {

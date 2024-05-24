@@ -82,9 +82,7 @@ const caseRequestTemplate = (info: EmailInfo) => `
     <div class="content">
         <p>Hello ${info.lawyerName},</p>
         <p>You have received a new case request. Please review the case file attached.</p>
-        <p>If you accept the case, click the button below to confirm:</p>
-        <a href="${info.URL}" class="button">Accept Case</a>
-        <p>Upon accepting the case, you will be requested to make the down payment.</p>
+        <p>Upon accepting the case, you will be requested to provide the advance payment.</p>
     </div>
 </body>
 </html>

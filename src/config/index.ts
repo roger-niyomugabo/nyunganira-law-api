@@ -3,7 +3,6 @@ dotenv.config();
 
 export default {
     requiredEnvVars: [
-        'FRONTEND_URL',
         'JWT_SECRET',
         'CLOUDINARY_NAME',
         'CLOUDINARY_API_KEY',
@@ -19,9 +18,6 @@ export default {
     NODEMAILER: {
         API_SENDER_EMAIL: process.env.API_SENDER_EMAIL,
         EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
-    },
-    client: {
-        frontend_url: process.env.FRONTEND_URL,
     },
     storage: {
         cloudinary_name: process.env.CLOUDINARY_NAME,
