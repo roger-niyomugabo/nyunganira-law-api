@@ -2,13 +2,15 @@ import express, { NextFunction, Request, Response } from 'express';
 import Joi from 'joi';
 import { Op } from 'sequelize';
 import { passwordRegex, phoneNumberRegex } from '../../utils/globalValidations';
-import { validate } from '../../middleware/middleware';
+import { pagination, validate } from '../../middleware/middleware';
 import { gender } from '../../interfaces/userInterface';
-import { User } from '../../db/models';
+import { Lawyer, User } from '../../db/models';
 import { asyncMiddleware } from '../../middleware/error_middleware';
 import output from '../../utils/response';
 import { generate } from '../../utils/bcrypt';
 import { sign } from '../../utils/jwt';
+import { isClient } from '../../middleware/access_middleware';
+import { computePaginationRes } from '../../utils';
 
 const router = express.Router();
 
@@ -42,6 +44,37 @@ router.post('/signup', validate(clientSignupValidations), asyncMiddleware(async 
 
     const token = sign({ clientId: client.id, role: client.role });
     return output(res, 201, 'Signed up successfully', { client, token }, null);
+})
+);
+
+router.get('/', isClient, pagination, asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
+    const orderClause = User.getOrderQuery(req.query);
+    const selectClause = User.getSelectionQuery(req.query);
+    const whereClause = User.getWhereQuery(req.query);
+    const { clientId, role } = req.user;
+
+    const client = await User.findOne({ where: { id: clientId } });
+    if (!client || client.role !== role) {
+        return output(res, 404, 'User not found', null, 'NOT_FOUND_ERROR');
+    }
+
+    const lawyers = await User.findAndCountAll({
+        order: orderClause,
+        attributes: selectClause,
+        where: { ...whereClause, role: 'lawyer' },
+        include: [{ model: Lawyer, as: 'lawyer' }],
+        limit: res.locals.pagination.limit,
+        offset: res.locals.pagination.offset,
+    });
+
+    return output(
+        res, 200, 'Case requests retrieved successfully',
+        computePaginationRes(
+            res.locals.pagination.page,
+            res.locals.pagination.limit,
+            lawyers.count,
+            lawyers.rows),
+        null);
 })
 );
 

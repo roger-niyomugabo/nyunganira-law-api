@@ -44,17 +44,9 @@ export function initModels(sequelize: Sequelize) {
         onDelete: 'CASCADE',
     });
 
-    // many-to-many self-association
-    User.belongsToMany(User, {
-        through: CaseRequest,
-        as: 'Client',
-        foreignKey: 'clientId',
-    });
-    User.belongsToMany(User, {
-        through: CaseRequest,
-        as: 'Lawyer',
-        foreignKey: 'lawyerId',
-    });
+    User.belongsToMany(Lawyer, { through: CaseRequest });
+
+    Lawyer.belongsToMany(User, { through: CaseRequest });
 
     return {
         User,
