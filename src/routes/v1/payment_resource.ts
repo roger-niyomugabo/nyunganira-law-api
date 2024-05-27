@@ -4,10 +4,11 @@ import { asyncMiddleware } from '../../middleware/error_middleware';
 import { paypackConfig } from '../../utils/paypackConfig';
 import output from '../../utils/response';
 import { CaseRequest, Lawyer, Payment, User } from '../../db/models';
-import { isClient } from '../../middleware/access_middleware';
+import { isClient, isLawyer } from '../../middleware/access_middleware';
 
 const router = express.Router({ mergeParams: true });
 
+// Pay
 router.post('/', isClient, asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
     const { clientId } = req.user;
     const { caseRequestId } = req.params;
@@ -34,6 +35,28 @@ router.post('/', isClient, asyncMiddleware(async (req: Request, res: Response, n
         return output(res, 200, 'payment request sent successful', newPayment, null);
     }
     return output(res, 200, 'payment request sent successful', null, null);
+})
+);
+
+router.patch('/request', isLawyer, asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
+    const { lawyerId } = req.user;
+    const { caseRequestId } = req.params;
+
+    const lawyerPromise = User.findOne({ where: { id: lawyerId } });
+    const caseRequestPromise = CaseRequest.findOne({ where: { id: caseRequestId } });
+    const [lawyer, caseRequest] = await Promise.all([lawyerPromise, caseRequestPromise]);
+    if (!lawyer || lawyer.role !== 'lawyer') {
+        return output(res, 404, 'User not found', null, 'NOT_FOUND_ERROR');
+    }
+    if (!caseRequest) {
+        return output(res, 404, 'Case request not found', null, 'NOT_FOUND_ERROR');
+    }
+
+    if (caseRequest.status === 'down payment') {
+        const request = await caseRequest.update({ status: 'requested full payment' }, { where: { id: caseRequestId } });
+        return output(res, 200, 'Full payment requested successfully', request, null);
+    }
+    return output(res, 400, 'Down payment was not paid', null, 'BAD_REQUEST');
 })
 );
 
