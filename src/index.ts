@@ -27,7 +27,7 @@ let server: Server;
 (async () => {
     // Database sync. If 'force' set to 'true' the current database is erased and created again
     // If 'alter' set to 'true' the current database is updated with the new changes
-    await db.sync({ force: true, alter: (process.env.NODE_ENV === 'development' ? true : false) }).then(async () => {
+    await db.sync({ alter: (process.env.NODE_ENV === 'development' ? true : false) }).then(async () => {
         logger.info({ message: 'Nyunganira Law database sync done' });
     });
     // Load express app and start listening

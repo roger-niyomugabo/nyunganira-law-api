@@ -25,6 +25,7 @@ import {
 } from '../../utils';
 import { genderT, roleT } from '../../interfaces/userInterface';
 import { Lawyer } from './lawyer_user';
+import { CaseRequest } from './case_request.model';
 
 export class User extends Model<
 InferAttributes<User>,
@@ -49,6 +50,7 @@ InferCreationAttributes<User>
 
     declare static associations: {
         Lawyer: Association<User, Lawyer>;
+        CaseRequest: Association<User, CaseRequest>;
     };
 
     static initModel(sequelize: Sequelize): typeof User {

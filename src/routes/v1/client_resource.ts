@@ -20,8 +20,8 @@ const clientSignupValidations = Joi.object({
     email: Joi.string().email().required(),
     gender: Joi.string().valid(...gender).required(),
     phoneNumber: Joi.string().regex(phoneNumberRegex).required().messages({
-        'string.base': 'Please provide phone number, starting with country code.',
-        'string.pattern.base': 'Please provide phone number, starting with country code.',
+        'string.base': 'Please provide a valid phone number (07xxxxxxxx)',
+        'string.pattern.base': 'Please provide a valid phone number (07xxxxxxxx)',
         'string.empty': 'Phone number is required',
     }),
     password: Joi.string().regex(passwordRegex).required().messages({

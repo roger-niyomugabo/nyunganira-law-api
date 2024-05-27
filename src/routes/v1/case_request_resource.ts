@@ -25,7 +25,7 @@ router.post('/:lawyerId', isClient, cloudinaryUpload.single('caseFile'), validat
     const caseFile = file.path;
 
     const client = await User.findOne({ where: { id: clientId } });
-    const lawyer = await User.findOne({ where: { id: lawyerId } });
+    const lawyer = await User.findOne({ where: { id: lawyerId }, include: [{ model: Lawyer, as: 'lawyer' }] });
     if (!client || client.role !== 'client') {
         return output(res, 404, 'User not found', null, 'NOT_FOUND_ERROR');
     }
@@ -33,7 +33,7 @@ router.post('/:lawyerId', isClient, cloudinaryUpload.single('caseFile'), validat
         return output(res, 404, 'User not found', null, 'NOT_FOUND_ERROR');
     }
     try {
-        const request = await CaseRequest.create({ ...req.body, caseFile, clientId, lawyerId });
+        const request = await CaseRequest.create({ ...req.body, caseFile, clientId, lawyerId: lawyer.lawyer.id });
         // send an email to lawyer
         await mailer({
             email: lawyer.email,
@@ -52,25 +52,27 @@ router.get('/', isLawyerOrClient, pagination, asyncMiddleware(async (req: Reques
     const whereClause = CaseRequest.getWhereQuery(req.query);
     const { clientId, lawyerId, role } = req.user;
 
-    const client = await User.findOne({ where: { id: clientId } });
-    const lawyer = await User.findOne({ where: { id: lawyerId }, include: [{ model: Lawyer, as: 'lawyer' }] });
-    if ((!client || client.role !== role) || (!lawyer || lawyer.role !== role)) {
-        return output(res, 404, 'User not found', null, 'NOT_FOUND_ERROR');
-    }
-
     let caseRequests: any;
     if (role === 'client') {
+        const client = await User.findOne({ where: { id: clientId } });
+        if (!client || client.role !== role) {
+            return output(res, 404, 'User not found', null, 'NOT_FOUND_ERROR');
+        }
         caseRequests = await CaseRequest.findAndCountAll({
             order: orderClause,
             attributes: selectClause,
             where: { ...whereClause, clientId },
-            include: [{ model: Lawyer, as: 'lawyer' }],
+            include: [{ model: Lawyer, as: 'lawyer', include: [{ model: User, as: 'user' }] }],
             limit: res.locals.pagination.limit,
             offset: res.locals.pagination.offset,
         });
     }
 
     if (role === 'lawyer') {
+        const lawyer = await User.findOne({ where: { id: lawyerId }, include: [{ model: Lawyer, as: 'lawyer' }] });
+        if (!lawyer || lawyer.role !== role) {
+            return output(res, 404, 'User not found', null, 'NOT_FOUND_ERROR');
+        }
         caseRequests = await CaseRequest.findAndCountAll({
             order: orderClause,
             attributes: selectClause,

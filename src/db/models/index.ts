@@ -3,12 +3,14 @@ import { User } from './user.model';
 import { Lawyer } from './lawyer_user';
 import { Address } from './address.model';
 import { CaseRequest } from './case_request.model';
+import { Payment } from './payment.model';
 
 export {
     User,
     Lawyer,
     Address,
-    CaseRequest
+    CaseRequest,
+    Payment
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -16,6 +18,7 @@ export function initModels(sequelize: Sequelize) {
     Lawyer.initModel(sequelize);
     Address.initModel(sequelize);
     CaseRequest.initModel(sequelize);
+    Payment.initModel(sequelize);
 
     // Declare associations here
     User.hasOne(Lawyer, {
@@ -44,14 +47,44 @@ export function initModels(sequelize: Sequelize) {
         onDelete: 'CASCADE',
     });
 
-    User.belongsToMany(Lawyer, { through: CaseRequest });
+    // User.belongsToMany(Lawyer, { through: CaseRequest, foreignKey: 'clientId', as: 'Client' });
 
-    Lawyer.belongsToMany(User, { through: CaseRequest });
+    // Lawyer.belongsToMany(User, { through: CaseRequest });
+
+    User.hasMany(CaseRequest, {
+        foreignKey: 'clientId',
+        as: 'caseRequests',
+    });
+    Lawyer.hasMany(CaseRequest, {
+        foreignKey: 'lawyerId',
+        as: 'caseRequests',
+    });
+
+    CaseRequest.belongsTo(User, {
+        foreignKey: 'clientId',
+        as: 'client',
+    });
+    CaseRequest.belongsTo(Lawyer, {
+        foreignKey: 'lawyerId',
+        as: 'lawyer',
+    });
+
+    User.hasMany(Payment, {
+        foreignKey: {
+            allowNull: false,
+        },
+    });
+    CaseRequest.hasMany(Payment, {
+        foreignKey: {
+            allowNull: false,
+        },
+    });
 
     return {
         User,
         Lawyer,
         Address,
         CaseRequest,
+        Payment,
     };
 }
