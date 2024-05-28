@@ -4,13 +4,15 @@ import { Lawyer } from './lawyer_user';
 import { Address } from './address.model';
 import { CaseRequest } from './case_request.model';
 import { Payment } from './payment.model';
+import { Story } from './story.model';
 
 export {
     User,
     Lawyer,
     Address,
     CaseRequest,
-    Payment
+    Payment,
+    Story
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -19,6 +21,7 @@ export function initModels(sequelize: Sequelize) {
     Address.initModel(sequelize);
     CaseRequest.initModel(sequelize);
     Payment.initModel(sequelize);
+    Story.initModel(sequelize);
 
     // Declare associations here
     User.hasOne(Lawyer, {
@@ -86,5 +89,6 @@ export function initModels(sequelize: Sequelize) {
         Address,
         CaseRequest,
         Payment,
+        Story,
     };
 }

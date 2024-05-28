@@ -17,6 +17,8 @@ import case_request_detail from './routes/v1/case_request_detail';
 import case_request_resource from './routes/v1/case_request_resource';
 import payment_resource from './routes/v1/payment_resource';
 import payment_success_resource from './routes/v1/payment_success_resource';
+import story_detail from './routes/v1/story_detail';
+import story_resource from './routes/v1/story_resource';
 
 const createServer = (app) => {
     app.disable('x-powered-by');
@@ -52,6 +54,9 @@ const createServer = (app) => {
     // payment routes
     app.use('/api/v1/payment/process', payment_success_resource, router.all('/', methodNotAllowedErrorHandler));
     app.use('/api/v1/payment/:caseRequestId', payment_resource, router.all('/', methodNotAllowedErrorHandler));
+    // story routes
+    app.use('/api/v1/story/:storyId', story_detail, router.all('/', methodNotAllowedErrorHandler));
+    app.use('/api/v1/story', story_resource, router.all('/', methodNotAllowedErrorHandler));
 
     // Middleware error handlers
     app.use(notFoundErrorHandler);
