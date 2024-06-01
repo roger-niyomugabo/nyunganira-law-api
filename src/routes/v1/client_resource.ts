@@ -2,15 +2,12 @@ import express, { NextFunction, Request, Response } from 'express';
 import Joi from 'joi';
 import { Op } from 'sequelize';
 import { passwordRegex, phoneNumberRegex } from '../../utils/globalValidations';
-import { pagination, validate } from '../../middleware/middleware';
+import { validate } from '../../middleware/middleware';
 import { gender } from '../../interfaces/userInterface';
-import { Address, Client, Lawyer, User } from '../../db/models';
+import { Client, User } from '../../db/models';
 import { asyncMiddleware } from '../../middleware/error_middleware';
 import output from '../../utils/response';
 import { generate } from '../../utils/bcrypt';
-import { sign } from '../../utils/jwt';
-import { isClient } from '../../middleware/access_middleware';
-import { computePaginationRes } from '../../utils';
 import mailer from '../../utils/mailer';
 import { generateOTP } from '../../utils/otpGenerator';
 import { db } from '../../db';
@@ -65,37 +62,6 @@ router.post('/signup', validate(clientSignupValidations), asyncMiddleware(async 
     } catch (error) {
         return output(res, 500, error.message || error, null, 'INTERNAL_SERVER_ERROR');
     }
-})
-);
-
-router.get('/', isClient, pagination, asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
-    const orderClause = User.getOrderQuery(req.query);
-    const selectClause = User.getSelectionQuery(req.query);
-    const whereClause = User.getWhereQuery(req.query);
-    const { clientId, role } = req.user;
-
-    const client = await User.findOne({ where: { id: clientId } });
-    if (!client || client.role !== role) {
-        return output(res, 404, 'User not found', null, 'NOT_FOUND_ERROR');
-    }
-
-    const lawyers = await User.findAndCountAll({
-        order: orderClause,
-        attributes: selectClause,
-        where: { ...whereClause, role: 'lawyer' },
-        include: [{ model: Lawyer, as: 'lawyer', include: [{ model: Address, as: 'address' }] }],
-        limit: res.locals.pagination.limit,
-        offset: res.locals.pagination.offset,
-    });
-
-    return output(
-        res, 200, 'Case requests retrieved successfully',
-        computePaginationRes(
-            res.locals.pagination.page,
-            res.locals.pagination.limit,
-            lawyers.count,
-            lawyers.rows),
-        null);
 })
 );
 
