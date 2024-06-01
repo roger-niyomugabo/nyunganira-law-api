@@ -31,7 +31,7 @@ router.post('/', asyncMiddleware(async (req: Request, res: Response, next: NextF
                 if (payment) {
                     const caseRequest = await CaseRequest.findOne({ where: { id: payment.caseRequestId } });
                     if (caseRequest) {
-                        await caseRequest.update({ downPayment: Sequelize.literal(`"downPayment" - ${amount}`), status: 'down payment' }, { where: { id: caseRequest.id } });
+                        await CaseRequest.update({ downPayment: Sequelize.literal(`"downPayment" - ${amount}`), fullPayment: Sequelize.literal(`"fullPayment" - ${amount}`), status: 'down payment' }, { where: { id: caseRequest.id } });
                         // console.log('Down payment success');
                         return output(res, 200, 'Down payment paid successfully', { paymentSuccess: cashinResult }, null);
                     }

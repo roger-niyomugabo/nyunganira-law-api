@@ -33,9 +33,9 @@ InferCreationAttributes<Address>
     declare id: CreationOptional<string>;
     declare lawyerId: ForeignKey<Lawyer['id']>;
     declare province: string;
-    declare district: string;
-    declare sector: genderT;
-    declare cell: string;
+    declare district?: string;
+    declare sector?: genderT;
+    declare cell?: string;
     declare street?: string;
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
@@ -71,11 +71,11 @@ InferCreationAttributes<Address>
                 },
                 sector: {
                     type: DataTypes.STRING,
-                    allowNull: false,
+                    allowNull: true,
                 },
                 cell: {
                     type: DataTypes.STRING,
-                    allowNull: false,
+                    allowNull: true,
                 },
                 street: {
                     type: DataTypes.STRING,
