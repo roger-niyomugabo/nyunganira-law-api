@@ -10,6 +10,7 @@ export interface EmailInfo {
     fullName?: string;
     password?: string;
     lawyerName?: string;
+    otp?: string;
 }
 
 export const caseRequestStatus = ['requested', 'approved', 'declined', 'down payment', 'requested full payment', 'fully paid'] as const;

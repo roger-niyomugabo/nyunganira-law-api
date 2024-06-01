@@ -10,6 +10,7 @@ import health from './routes/health';
 import resource from './routes/resource';
 import test from './routes/testing_resources';
 import client_resource from './routes/v1/client_resource';
+import client_detail from './routes/v1/client_detail';
 import users_resource from './routes/v1/users_resource';
 import lawyer_resource from './routes/v1/lawyer_resource';
 import admin_resource from './routes/v1/admin_resource';
@@ -41,6 +42,7 @@ const createServer = (app) => {
     app.use('/index', resource, router.all('/', methodNotAllowedErrorHandler));
 
     // client routes
+    app.use('/api/v1/client', client_detail, router.all('/', methodNotAllowedErrorHandler));
     app.use('/api/v1/client', client_resource, router.all('/', methodNotAllowedErrorHandler));
     // users routes
     app.use('/api/v1/users', users_resource, router.all('/', methodNotAllowedErrorHandler));

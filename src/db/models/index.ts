@@ -5,6 +5,7 @@ import { Address } from './address.model';
 import { CaseRequest } from './case_request.model';
 import { Payment } from './payment.model';
 import { Story } from './story.model';
+import { Client } from './client_user';
 
 export {
     User,
@@ -12,7 +13,8 @@ export {
     Address,
     CaseRequest,
     Payment,
-    Story
+    Story,
+    Client
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -22,6 +24,7 @@ export function initModels(sequelize: Sequelize) {
     CaseRequest.initModel(sequelize);
     Payment.initModel(sequelize);
     Story.initModel(sequelize);
+    Client.initModel(sequelize);
 
     // Declare associations here
     User.hasOne(Lawyer, {
@@ -31,6 +34,19 @@ export function initModels(sequelize: Sequelize) {
         onDelete: 'CASCADE',
     });
     Lawyer.belongsTo(User, {
+        foreignKey: {
+            allowNull: false,
+        },
+        onDelete: 'CASCADE',
+    });
+
+    User.hasOne(Client, {
+        foreignKey: {
+            allowNull: false,
+        },
+        onDelete: 'CASCADE',
+    });
+    Client.belongsTo(User, {
         foreignKey: {
             allowNull: false,
         },
@@ -90,5 +106,6 @@ export function initModels(sequelize: Sequelize) {
         CaseRequest,
         Payment,
         Story,
+        Client,
     };
 }

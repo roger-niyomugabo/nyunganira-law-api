@@ -1,7 +1,7 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import express, { NextFunction, Request, Response } from 'express';
 import Joi from 'joi';
-import { User } from '../../db/models';
+import { Client, User } from '../../db/models';
 import { check } from '../../utils/bcrypt';
 import { validate } from '../../middleware/middleware';
 import { asyncMiddleware } from '../../middleware/error_middleware';
@@ -19,9 +19,13 @@ const usersLoginValidations = Joi.object({
 router.post('/login', validate(usersLoginValidations), asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email }, include: [{ model: Client, as: 'client' }] });
     if (!user || !['lawyer', 'client'].includes(user.role)) {
         return output(res, 404, 'Email not registered', null, 'NOT_FOUND_ERROR');
+    }
+    const client_user = await Client.findOne({ where: { userId: user.id } });
+    if (!client_user) {
+        return output(res, 404, 'Client not found', null, 'NOT_FOUND_ERROR');
     }
 
     const isMatch = check(user.password, password);
@@ -36,6 +40,9 @@ router.post('/login', validate(usersLoginValidations), asyncMiddleware(async (re
     }
     if (user.role === 'client') {
         const token = sign({ clientId: user.id, role: user.role });
+        if (!client_user.isVerified) {
+            return output(res, 400, 'Account not verified', null, null);
+        }
         return output(res, 200, 'Logged in successfully', { user, token }, null);
     }
 

@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import config from '../config';
 import { EmailInfo } from '../interfaces';
-import { accountCreationTemplate, caseRequestTemplate } from './emailTemplates';
+import { accountCreationTemplate, caseRequestTemplate, emailVerificationTemplate } from './emailTemplates';
 
 const mailer = async (info: EmailInfo, action: string, attachmentPath?: string) => {
     const transporter = nodemailer.createTransport({
@@ -17,6 +17,11 @@ const mailer = async (info: EmailInfo, action: string, attachmentPath?: string) 
     let data: string;
     // eslint-disable-next-line sonarjs/no-small-switch
     switch (action) {
+        case 'emailVerificationRequest':
+            subject = 'Email Verification';
+            data = emailVerificationTemplate(info);
+            emailto = info.email;
+            break;
         case 'accountCreationRequest':
             subject = 'Account Creation';
             data = accountCreationTemplate(info);
