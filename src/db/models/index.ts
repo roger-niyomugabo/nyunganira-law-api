@@ -1,4 +1,4 @@
-import type { Sequelize } from 'sequelize';
+import { Sequelize } from 'sequelize';
 import { User } from './user.model';
 import { Lawyer } from './lawyer_user';
 import { Address } from './address.model';

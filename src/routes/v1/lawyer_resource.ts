@@ -31,8 +31,8 @@ const lawyerValidations = Joi.object({
 
     province: Joi.string().required(),
     district: Joi.string().required(),
-    sector: Joi.string().required(),
-    cell: Joi.string().required(),
+    sector: Joi.string(),
+    cell: Joi.string(),
     street: Joi.string(),
 });
 

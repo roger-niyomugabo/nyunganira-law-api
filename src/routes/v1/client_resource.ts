@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 import { passwordRegex, phoneNumberRegex } from '../../utils/globalValidations';
 import { pagination, validate } from '../../middleware/middleware';
 import { gender } from '../../interfaces/userInterface';
-import { Lawyer, User } from '../../db/models';
+import { Address, Lawyer, User } from '../../db/models';
 import { asyncMiddleware } from '../../middleware/error_middleware';
 import output from '../../utils/response';
 import { generate } from '../../utils/bcrypt';
@@ -62,7 +62,7 @@ router.get('/', isClient, pagination, asyncMiddleware(async (req: Request, res: 
         order: orderClause,
         attributes: selectClause,
         where: { ...whereClause, role: 'lawyer' },
-        include: [{ model: Lawyer, as: 'lawyer' }],
+        include: [{ model: Lawyer, as: 'lawyer', include: [{ model: Address, as: 'address' }] }],
         limit: res.locals.pagination.limit,
         offset: res.locals.pagination.offset,
     });
