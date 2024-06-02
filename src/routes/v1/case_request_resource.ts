@@ -18,11 +18,9 @@ const caseRequestValidations = Joi.object({
     description: Joi.string().required(),
 });
 
-router.post('/:lawyerId', isClient, cloudinaryUpload.single('caseFile'), validate(caseRequestValidations), asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
+router.post('/:lawyerId', isClient, validate(caseRequestValidations), asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
     const { clientId } = req.user;
     const { lawyerId } = req.params;
-    const file = req.file as Express.Multer.File;
-    const caseFile = file.path;
 
     const client = await User.findOne({ where: { id: clientId } });
     const lawyer = await User.findOne({ where: { id: lawyerId }, include: [{ model: Lawyer, as: 'lawyer' }] });
@@ -33,11 +31,7 @@ router.post('/:lawyerId', isClient, cloudinaryUpload.single('caseFile'), validat
         return output(res, 404, 'User not found', null, 'NOT_FOUND_ERROR');
     }
     try {
-        const request = await CaseRequest.create({ ...req.body, caseFile, clientId, lawyerId: lawyer.lawyer.id });
-        // send an email to lawyer
-        await mailer({
-            email: lawyer.email,
-            lawyerName: lawyer.fullName }, 'caseRequestInvitation', caseFile);
+        const request = await CaseRequest.create({ ...req.body, clientId, lawyerId: lawyer.lawyer.id });
 
         return output(res, 201, 'Case request registered successfully', request, null);
     } catch (error) {
