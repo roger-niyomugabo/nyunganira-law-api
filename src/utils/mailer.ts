@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import config from '../config';
 import { EmailInfo } from '../interfaces';
-import { accountCreationTemplate, caseRequestTemplate, emailVerificationTemplate } from './emailTemplates';
+import { accountCreationTemplate, emailVerificationTemplate } from './emailTemplates';
 
 const mailer = async (info: EmailInfo, action: string, attachmentPath?: string) => {
     const transporter = nodemailer.createTransport({
@@ -25,11 +25,6 @@ const mailer = async (info: EmailInfo, action: string, attachmentPath?: string) 
         case 'accountCreationRequest':
             subject = 'Account Creation';
             data = accountCreationTemplate(info);
-            emailto = info.email;
-            break;
-        case 'caseRequestInvitation':
-            subject = 'Case Request Invitation';
-            data = caseRequestTemplate(info);
             emailto = info.email;
             break;
 

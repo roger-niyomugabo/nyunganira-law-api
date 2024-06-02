@@ -26,7 +26,6 @@ InferCreationAttributes<CaseRequest>
     declare clientId: ForeignKey<User['id']>;
     declare lawyerId: ForeignKey<Lawyer['id']>;
     declare description: string;
-    declare caseFile: string;
     declare downPayment: number;
     declare fullPayment: number;
     declare status: caseRequestStatusT;
@@ -64,10 +63,6 @@ InferCreationAttributes<CaseRequest>
                 type: DataTypes.TEXT,
                 allowNull: false,
             },
-            caseFile: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
             downPayment: {
                 type: DataTypes.DECIMAL(10, 2),
                 defaultValue: 0,
@@ -96,7 +91,7 @@ InferCreationAttributes<CaseRequest>
     }
 
     static selectionAllowedFields: string[] =
-        ['id', 'description', 'caseFile', 'downPayment', 'fullPayment', 'status', 'createdAt', 'updatedAt'];
+        ['id', 'description', 'downPayment', 'fullPayment', 'status', 'createdAt', 'updatedAt'];
     static defaultSortFields: OrderClause[] = [
         ['createdAt', 'desc'],
     ];
