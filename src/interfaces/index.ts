@@ -16,5 +16,5 @@ export interface EmailInfo {
 export const caseRequestStatus = ['requested', 'approved', 'declined', 'down payment', 'requested full payment', 'fully paid'] as const;
 export type caseRequestStatusT = typeof caseRequestStatus[number];
 
-export const paymentStatus = ['pending', 'successful'] as const;
+export const paymentStatus = ['pending', 'successful', 'failed'] as const;
 export type paymentStatusT = typeof paymentStatus[number];

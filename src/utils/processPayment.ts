@@ -27,7 +27,7 @@ export const processPayment = async (req: Request, res: Response, next: NextFunc
     }
 
     const response = await paypackConfig.cashin(amount, number);
-
+    console.log(response.data.status, 'response in processPayment')
     if (response.data.status === 'pending') {
         const newPayment = await Payment.create({
             amount,
@@ -38,10 +38,14 @@ export const processPayment = async (req: Request, res: Response, next: NextFunc
             provider: response.data.provider,
             fee: response.data.fee,
             caseRequestId,
-        });
+        })
+        // .catch((err)=>{
+        //     console.log(err)
+        // })
 
         return output(res, 200, 'Payment request sent successfully', newPayment, null);
+    } else{
+        return output(res, 400, 'Payment request failed', null, null);
     }
 
-    return output(res, 200, 'Payment request sent successfully', null, null);
 };
