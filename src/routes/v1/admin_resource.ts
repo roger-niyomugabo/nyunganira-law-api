@@ -7,7 +7,7 @@ import output from '../../utils/response';
 import { sign } from '../../utils/jwt';
 import config from '../../config';
 import { isAdmin } from '../../middleware/access_middleware';
-import { Address, Lawyer, User, Client } from '../../db/models';
+import { Address, CaseRequest, Client, Lawyer, Payment, Story, User } from '../../db/models';
 import { computePaginationRes } from '../../utils';
 
 const router = express.Router();
@@ -30,11 +30,6 @@ router.post('/login', validate(usersLoginValidations), asyncMiddleware(async (re
 );
 
 router.get('/lawyers', isAdmin, pagination, asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
-    // const orderClause = CaseRequest.getOrderQuery(req.query);
-    // const selectClause = CaseRequest.getSelectionQuery(req.query);
-    // const whereClause = CaseRequest.getWhereQuery(req.query);
-    // const { clientId, lawyerId, role } = req.user;
-
     const lawyers = await User.findAndCountAll({
         where: { role: 'lawyer' },
         include: [{ model: Lawyer, as: 'lawyer', include: [{ model: Address, as: 'address' }] }],
@@ -54,14 +49,9 @@ router.get('/lawyers', isAdmin, pagination, asyncMiddleware(async (req: Request,
 );
 
 router.get('/clients', isAdmin, pagination, asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
-    // const orderClause = CaseRequest.getOrderQuery(req.query);
-    // const selectClause = CaseRequest.getSelectionQuery(req.query);
-    // const whereClause = CaseRequest.getWhereQuery(req.query);
-    // const { clientId, lawyerId, role } = req.user;
-
     const clients = await User.findAndCountAll({
         where: { role: 'client' },
-        include: [{ model: Client, as: 'client'}],
+        include: [{ model: Client, as: 'client' }],
         limit: res.locals.pagination.limit,
         offset: res.locals.pagination.offset,
     });
@@ -76,4 +66,21 @@ router.get('/clients', isAdmin, pagination, asyncMiddleware(async (req: Request,
         null);
 })
 );
+
+router.get('/metrics', isAdmin, pagination, asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
+    const [clients, lawyers, cases, payments, stories] = await Promise.all([
+        User.count({ where: { role: 'client' } }),
+        User.count({ where: { role: 'lawyer' } }),
+        CaseRequest.count(),
+        Payment.count(),
+        Story.count(),
+    ]);
+
+    return output(
+        res, 200, 'Metrics retrieved successfully',
+        { clients, lawyers, cases, payments, stories },
+        null);
+})
+);
+
 export default router;
