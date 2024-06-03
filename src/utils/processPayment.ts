@@ -6,6 +6,7 @@ import { paypackConfig } from './paypackConfig';
 export const processPayment = async (req: Request, res: Response, next: NextFunction, paymentType: 'downPayment' | 'fullPayment') => {
     const { clientId } = req.user;
     const { caseRequestId } = req.params;
+    const { number } = req.body;
 
     const caseRequest = await CaseRequest.findOne({
         where: { id: caseRequestId },
@@ -19,7 +20,7 @@ export const processPayment = async (req: Request, res: Response, next: NextFunc
     }
 
     const amount = paymentType === 'downPayment' ? caseRequest.downPayment : caseRequest.fullPayment;
-    const number = caseRequest?.lawyer?.user?.phoneNumber;
+    // const number = caseRequest?.lawyer?.user?.phoneNumber;
 
     if (!number) {
         return output(res, 400, 'Lawyer phone number not found', null, 'BAD_REQUEST_ERROR');

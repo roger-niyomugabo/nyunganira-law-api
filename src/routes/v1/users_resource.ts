@@ -24,7 +24,7 @@ router.post('/login', validate(usersLoginValidations), asyncMiddleware(async (re
         return output(res, 404, 'Email not registered', null, 'NOT_FOUND_ERROR');
     }
     const client_user = await Client.findOne({ where: { userId: user.id } });
-    if (!client_user) {
+    if (!client_user && user.role === 'client') {
         return output(res, 404, 'Client not found', null, 'NOT_FOUND_ERROR');
     }
 
