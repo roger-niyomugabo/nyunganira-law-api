@@ -19,7 +19,6 @@ const storyValidations = Joi.object({
 
 router.post('/', isAdmin, cloudinaryUpload.single('image'), validate(storyValidations), asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
     const { title, content } = req.body;
-    const { userId } = req.user;
     const file = req.file as Express.Multer.File;
 
     const storyExists = await Story.findOne({ where: { title, content } });
