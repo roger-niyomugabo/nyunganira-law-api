@@ -46,36 +46,40 @@ router.patch('/request', isLawyer, asyncMiddleware(async (req: Request, res: Res
 router.get('/status/:refId', asyncMiddleware(async(req: Request, res: Response, next: NextFunction)=>{
     const { refId } = req.params;
     try {
-      // Update payment record
-      const payment = await Payment.findOne({ where: { refId }});
-      if (!payment) {
-        return res.status(404).json({ message: 'payment not found' });
-      }
-      if(payment.status === 'successful') return output(res, 201, 'payment was completed successfuly', payment, null)
-      if(payment.status === 'failed') return output(res, 400, 'Payment failed', null, 'BAD_REQUEST')
-      let iterations = 0;
-      const interval = setInterval(async () => {
-        iterations++;
-        if (iterations > 132) {
-            clearInterval(interval);
-            await payment.update({status: 'failed'})
-            return output(res, 400, 'Payment failed', null, 'BAD_REQUEST')
+        // Update payment record
+        const payment = await Payment.findOne({ where: { refId } });
+        if (!payment) {
+            return res.status(404).json({ message: 'payment not found' });
         }
-        const reservation = await Payment.findOne({ where: { refId }})
-        if (reservation?.status === 'successful' || reservation?.status === 'failed') {
-            clearInterval(interval);
-            if(reservation?.status === 'successful') {
-              return output(res, 201, 'payment was completed successfuly', payment, null)
-            } else {
-                
-                return output(res, 400, 'Payment failed', null, 'BAD_REQUEST')
+        if (payment.status === 'successful') {
+            return output(res, 201, 'payment was completed successfuly', payment, null);
+        }
+        if (payment.status === 'failed') {
+            return output(res, 400, 'Payment failed', null, 'BAD_REQUEST');
+        }
+        let iterations = 0;
+        const interval = setInterval(async () => {
+            iterations++;
+            if (iterations > 132) {
+                clearInterval(interval);
+                await payment.update({ status: 'failed' });
+                return output(res, 400, 'Payment failed', null, 'BAD_REQUEST');
             }
-        }
-    }, 5000); // 5 seconds and total is 11 minutes
-  
+            const reservation = await Payment.findOne({ where: { refId } });
+            if (reservation?.status === 'successful' || reservation?.status === 'failed') {
+                clearInterval(interval);
+                if (reservation?.status === 'successful') {
+                    return output(res, 201, 'payment was completed successfuly', payment, null);
+                } else {
+
+                    return output(res, 400, 'Payment failed', null, 'BAD_REQUEST');
+                }
+            }
+        }, 5000); // 5 seconds and total is 11 minutes
+
     } catch (error) {
-        return output(res, 500, 'Payment failed', null, 'BAD_REQUEST')
+        return output(res, 500, 'Payment failed', null, 'BAD_REQUEST');
     }
-}))
+}));
 
 export default router;
