@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  nyunganira_db:
+    image: postgres:14.3-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: nyunganira_database
+    ports:
+      - 5555:5432
+    volumes:
+      - nyunganira_postgres:/var/lib/postgresql/data
+
+volumes:
+  nyunganira_postgres:
+    external: false
