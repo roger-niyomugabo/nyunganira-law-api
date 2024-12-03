@@ -54,7 +54,7 @@ const createServer = (app) => {
     app.use('/api/v1/case_request', case_request_resource, router.all('/', methodNotAllowedErrorHandler));
     app.use('/api/v1/case_request/:caseRequestId', case_request_detail, router.all('/', methodNotAllowedErrorHandler));
     // payment routes
-    app.use('/api/v1/payment/process', payment_success_resource, router.all('/', methodNotAllowedErrorHandler));
+    app.use('/payments/webhook', payment_success_resource, router.all('/', methodNotAllowedErrorHandler));
     app.use('/api/v1/payment/:caseRequestId', payment_resource, router.all('/', methodNotAllowedErrorHandler));
     // story routes
     app.use('/api/v1/story/:storyId', story_detail, router.all('/', methodNotAllowedErrorHandler));

@@ -24,7 +24,7 @@ const clientSignupValidations = Joi.object({
         'string.pattern.base': 'Please provide a valid phone number (07xxxxxxxx)',
         'string.empty': 'Phone number is required',
     }),
-    password: Joi.string().regex(passwordRegex).required().messages({
+    password: Joi.string().min(6).required().messages({
         'string.base': 'Please provide a valid password',
         'string.pattern.base': 'Password must have at least 8 characters, including uppercase, lowercase, and a digit',
         'string.empty': 'Password is required',
