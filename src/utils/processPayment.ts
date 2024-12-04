@@ -18,14 +18,16 @@ export const processPayment = async (req: Request, res: Response, next: NextFunc
         return output(res, 404, 'No case request to pay for', null, 'NOT_FOUND_ERROR');
     }
 
-    const amount = paymentType === 'downPayment' ? caseRequest.downPayment : caseRequest.fullPayment;
+    const amount = paymentType === 'downPayment' ? caseRequest.downPayment : caseRequest.fullPayment - caseRequest.downPayment;
     // const number = caseRequest?.lawyer?.user?.phoneNumber;
 
     if (!number) {
         return output(res, 400, 'Client phone number not found', null, 'BAD_REQUEST_ERROR');
     }
 
-    const paymentResponse = await paypackConfig.cashin(amount, number);
+    const paymentResponse = await paypackConfig.cashin(amount, number).catch((err) => {
+        return output(res, 400, err.message, null, 'BAD_REQUEST_ERROR');
+    });
     // eslint-disable-next-line no-console
     if (paymentResponse.data.status === 'pending') {
         const newPayment = await Payment.create({

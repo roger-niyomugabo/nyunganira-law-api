@@ -1,6 +1,5 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import express, { NextFunction, Request, Response } from 'express';
-import { Sequelize } from 'sequelize';
 import { asyncMiddleware } from '../../middleware/error_middleware';
 import output from '../../utils/response';
 import { CaseRequest, Payment } from '../../db/models';
@@ -30,16 +29,16 @@ router.post('/', asyncMiddleware(async (req: Request, res: Response, next: NextF
                 const payment = await Payment.findOne({ where: { refId: ref } });
                 if (payment) {
                     const caseRequest = await CaseRequest.findOne({ where: { id: payment.caseRequestId } });
-                    if (caseRequest) {
-                        await CaseRequest.update({ downPayment: Sequelize.literal(`"downPayment" - ${amount}`), fullPayment: Sequelize.literal(`"fullPayment" - ${amount}`), status: 'down payment' }, { where: { id: caseRequest.id } });
+                    if (caseRequest && caseRequest.status !== 'down payment' && caseRequest.status !== 'requested full payment' && caseRequest.status !== 'fully paid') {
+                        await CaseRequest.update({ status: 'down payment' }, { where: { id: caseRequest.id } });
                         return output(res, 200, 'Down payment paid successfully', { paymentSuccess: cashinResult }, null);
+                    } else if (caseRequest && caseRequest.status === 'down payment' || caseRequest.status === 'requested full payment') {
+                        await CaseRequest.update({ status: 'fully paid' }, { where: { id: caseRequest.id } });
+                        return output(res, 200, 'Full payment paid successfully', { paymentSuccess: cashinResult }, null);
                     }
                 }
             }
-
-            return output(res, 200, 'Processing down payment', { paymentSuccess: cashinResult }, null);
         } catch (err) {
-            // console.error('Error processing payment:', err);
             return output(res, 500, 'Error processing payment', null, null);
         }
     } else {
