@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import express, { NextFunction, Request, Response } from 'express';
 import Joi from 'joi';
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import output from '../../utils/response';
 import { asyncMiddleware } from '../../middleware/error_middleware';
-import { Address, Lawyer, User } from '../../db/models';
-import { isAdmin, isClient } from '../../middleware/access_middleware';
+import { Address, CaseRequest, Lawyer, Payment, User } from '../../db/models';
+import { isAdmin, isClient, isLawyer } from '../../middleware/access_middleware';
 import { pagination, validate } from '../../middleware/middleware';
 import { db } from '../../db';
 import { generate } from '../../utils/bcrypt';
@@ -100,6 +100,23 @@ router.get('/', isClient, pagination, asyncMiddleware(async (req: Request, res: 
             lawyers.count,
             lawyers.rows),
         null);
+})
+);
+
+// total payments
+router.get('/totalPayments', isLawyer, asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
+    const { lawyerId } = req.user;
+    const lawyer = await Lawyer.findOne({ where: { userId: lawyerId } });
+    const cases = await CaseRequest.findAll({ where: { lawyerId: lawyer.id }, attributes: ['id'] });
+    const caseIds = cases.map((c) => c.id);
+    const totalSuccessfulPayments = await Payment.findOne({
+        where: { status: 'successful', caseRequestId: caseIds },
+        attributes: [
+            [Sequelize.fn('SUM', Sequelize.col('amount')), 'totalAmount'],
+        ],
+        raw: true,
+    });
+    return output(res, 200, 'Total payments retrieved successfully', totalSuccessfulPayments, null);
 })
 );
 
