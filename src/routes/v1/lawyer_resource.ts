@@ -24,7 +24,7 @@ const lawyerValidations = Joi.object({
     email: Joi.string().email().required(),
     gender: Joi.string().valid(...gender).required(),
     phoneNumber: Joi.string().regex(phoneNumberRegex).required().messages({
-        'string.base': 'Please provide a valid phone number (07xxxxxxxx)',
+        'string.base': 'Please provide a valid phone number it should be 10 digits starting with 07 (07xxxxxxxx)',
         'string.pattern.base': 'Please provide a valid phone number (07xxxxxxxx)',
         'string.empty': 'Phone number is required',
     }),

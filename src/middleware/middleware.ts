@@ -1,6 +1,7 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import Joi from 'joi';
 import { processPagination } from '../utils/index';
+import output from '../utils/response';
 
 /**
 // Middleware to process the pagination and save the var we need in the local storage.
@@ -36,10 +37,7 @@ export const validate = (schemaValidator: Joi.ObjectSchema) => {
                     value: err.context.value,
                 };
             });
-            return res.status(422).json({
-                title: 'invalid data in request body',
-                errors: customErrors,
-            });
+            return output(res, 422, customErrors || error, null, 'VALIDATION_ERROR');
         }
 
         req.body = value;
