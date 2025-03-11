@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { Server } from 'http';
+// import { Server } from 'http';
 import { db } from './db';
 import createServer from './app';
 import { checkEnvVars } from './utils';
@@ -23,7 +23,7 @@ if (erroredVars.length) {
 }
 
 // Execute async tasks and, if all of then are ok, start service
-let server: Server;
+let server;
 (async () => {
     // Database sync. If 'force' set to 'true' the current database is erased and created again
     // If 'alter' set to 'true' the current database is updated with the new changes

@@ -1,12 +1,15 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import express, { NextFunction, Request, Response } from 'express';
 import Joi from 'joi';
-import { Client, User } from '../../db/models';
+import { Client, Lawyer, User } from '../../db/models';
 import { check } from '../../utils/bcrypt';
 import { validate } from '../../middleware/middleware';
 import { asyncMiddleware } from '../../middleware/error_middleware';
 import output from '../../utils/response';
 import { sign } from '../../utils/jwt';
+import { isAdmin, isLawyerOrClient } from '../../middleware/access_middleware';
+import { generate } from '../../utils/bcrypt';
+
 const router = express.Router();
 
 // users login validations
@@ -47,6 +50,54 @@ router.post('/login', validate(usersLoginValidations), asyncMiddleware(async (re
     }
 
     return output(res, 401, 'Invalid login cridentials', null, 'AUTHENTICATION_ERROR');
+})
+);
+
+// change password
+router.patch('/changePassword', isLawyerOrClient, asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
+    const { clientId, lawyerId } = req.user;
+    const userId = clientId || lawyerId;
+    const { oldPassword, newPassword } = req.body;
+
+    const user = await User.findOne({ where: { id: userId } });
+    if (!user) {
+        return output(res, 404, 'User not found', null, 'NOT_FOUND_ERROR');
+    }
+
+    const isMatch = check(user.password, oldPassword);
+    if (!isMatch) {
+        return output(res, 400, 'Old password is incorrect', null, 'BAD_REQUEST_ERROR');
+    }
+
+    const hashedPassword = await generate(newPassword);
+    await user.update({ password: hashedPassword });
+
+    return output(res, 200, 'Password changed successfully', null, null);
+})
+);
+
+// delete user
+router.delete('/delete/:userId', isAdmin, asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req.params;
+    const user = await User.findOne({ where: { id: userId } });
+    if (!user) {
+        return output(res, 404, 'User not found', null, 'NOT_FOUND_ERROR');
+    }
+    if (user.role === 'lawyer') {
+        const lawyer = await Lawyer.findOne({ where: { userId: user.id } });
+        if (lawyer) {
+            await lawyer.destroy();
+        }
+    }
+    if (user.role === 'client') {
+        const client = await Client.findOne({ where: { userId: user.id } });
+        if (client) {
+            await client.destroy();
+        }
+    }
+    await user.destroy();
+
+    return output(res, 200, 'User deleted successfully', null, null);
 })
 );
 

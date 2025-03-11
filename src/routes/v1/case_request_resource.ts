@@ -25,10 +25,10 @@ router.post('/:lawyerId', isClient, validate(caseRequestValidations), asyncMiddl
     const client = await User.findOne({ where: { id: clientId } });
     const lawyer = await User.findOne({ where: { id: lawyerId }, include: [{ model: Lawyer, as: 'lawyer' }] });
     if (!client || client.role !== 'client') {
-        return output(res, 404, 'User not found', null, 'NOT_FOUND_ERROR');
+        return output(res, 404, 'Client not found', null, 'NOT_FOUND_ERROR');
     }
     if (!lawyer || lawyer.role !== 'lawyer') {
-        return output(res, 404, 'User not found', null, 'NOT_FOUND_ERROR');
+        return output(res, 404, 'Lawyer not found', null, 'NOT_FOUND_ERROR');
     }
     try {
         const request = await CaseRequest.create({ ...req.body, clientId, lawyerId: lawyer.lawyer.id });
